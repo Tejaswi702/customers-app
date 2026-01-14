@@ -5,25 +5,20 @@ import { useNavigate } from "react-router-dom";
 function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [ready, setReady] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const handleSession = async () => {
-      const { error } = await supabase.auth.exchangeCodeForSession(
-        window.location.href
-      );
-
-      if (error) {
-        alert("Invalid or expired reset link");
-        navigate("/");
-      } else {
-        setLoading(false);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setReady(true);
       }
-    };
+    });
 
-    handleSession();
-  }, [navigate]);
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleUpdatePassword = async () => {
     if (password !== confirmPassword) {
@@ -37,13 +32,12 @@ function ResetPassword() {
       alert(error.message);
     } else {
       alert("Password updated successfully");
-
       await supabase.auth.signOut();
       navigate("/");
     }
   };
 
-  if (loading) {
+  if (!ready) {
     return <p>Verifying reset link...</p>;
   }
 
