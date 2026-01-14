@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 
@@ -18,9 +18,7 @@ function AppRoutes() {
     });
   }, []);
 
-  if (checking) {
-    return <p>Loading...</p>;
-  }
+  if (checking) return <p>Loading...</p>;
 
   return (
     <Routes>
@@ -36,12 +34,10 @@ function AppRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AppRoutes />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
 export default App;
-
-
