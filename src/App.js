@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 
@@ -10,7 +10,6 @@ import Services from "./components/Services";
 import ResetPassword from "./components/ResetPassword";
 
 function AppRoutes() {
-  const location = useLocation();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -44,3 +43,5 @@ function App() {
 }
 
 export default App;
+
+
