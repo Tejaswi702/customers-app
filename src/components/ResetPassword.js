@@ -5,23 +5,28 @@ import { useNavigate } from "react-router-dom";
 function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [ready, setReady] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // ✅ Listen for PASSWORD_RECOVERY event
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (event) => {
-        if (event === "PASSWORD_RECOVERY") {
-          setReady(true);
-        }
-      }
-    );
+    const init = async () => {
+      // 🔑 THIS IS THE MISSING STEP
+      const { error } = await supabase.auth.exchangeCodeForSession(
+        window.location.href
+      );
 
-    return () => {
-      listener.subscription.unsubscribe();
+      if (error) {
+        alert("Invalid or expired reset link");
+        navigate("/");
+        return;
+      }
+
+      // ✅ Session is now created
+      setLoading(false);
     };
-  }, []);
+
+    init();
+  }, [navigate]);
 
   const handleUpdatePassword = async () => {
     if (password !== confirmPassword) {
@@ -40,7 +45,7 @@ function ResetPassword() {
     }
   };
 
-  if (!ready) {
+  if (loading) {
     return <p>Verifying reset link...</p>;
   }
 
@@ -53,6 +58,7 @@ function ResetPassword() {
           className="auth-input"
           type="password"
           placeholder="New Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
@@ -60,6 +66,7 @@ function ResetPassword() {
           className="auth-input"
           type="password"
           placeholder="Confirm Password"
+          value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
@@ -72,4 +79,3 @@ function ResetPassword() {
 }
 
 export default ResetPassword;
-
