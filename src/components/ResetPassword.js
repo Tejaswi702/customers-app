@@ -9,9 +9,10 @@ function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Supabase automatically creates session from reset link
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
-        setChecking(false);
+        setChecking(false); // allow reset UI
       } else {
         alert("Invalid or expired reset link");
         navigate("/");
@@ -31,6 +32,11 @@ function ResetPassword() {
       alert(error.message);
     } else {
       alert("Password updated successfully");
+
+      // ✅ IMPORTANT: logout user after reset
+      await supabase.auth.signOut();
+
+      // go back to customer login
       navigate("/");
     }
   };
