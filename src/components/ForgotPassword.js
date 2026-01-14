@@ -6,10 +6,15 @@ function ForgotPassword() {
   const [loading, setLoading] = useState(false);
 
   const handleReset = async () => {
+    if (!email) {
+      alert("Please enter your email");
+      return;
+    }
+
     setLoading(true);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: "https://customers-app-eight.vercel.app/reset-password",
     });
 
     setLoading(false);
@@ -30,10 +35,15 @@ function ForgotPassword() {
           className="auth-input"
           type="email"
           placeholder="Enter your email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        <button className="auth-button" onClick={handleReset} disabled={loading}>
+        <button
+          className="auth-button"
+          onClick={handleReset}
+          disabled={loading}
+        >
           {loading ? "Sending..." : "Send Reset Link"}
         </button>
       </div>
